@@ -1,0 +1,116 @@
+<template id="calciCalculate">
+	<style >
+		.flex-container{
+			display: inline-flex;
+			background-color : cadetblue;
+			border-radius: 5px;
+			flex-direction: column;
+			width : 300px;
+			height : 300px;
+			padding : 1px;
+		}
+		.flex-item{
+			display : flex;
+			flex : 1;
+			background-color: orange;
+			margin : 2px;
+			flex-flow: row wrap;
+		}
+		.item{
+			display: flex;
+			flex:1;
+			margin : 2px;
+		}
+		.item-screen{
+			display: flex;
+			flex:3;
+			margin : 2px;	
+		}
+		.item-screen input{
+			width : 100%;
+			text-align: right;
+		}
+		.item input{
+			width : 100%;
+			background-color: yellowgreen;
+			font-size : larger;
+		}
+
+	</style>
+	<div class="flex-container">
+		<div class="flex-item">
+			<div class="item"><input type="button" value="C"></div>
+			<div class="item-screen"><input type="text" name="screen"></div>
+		</div>
+		<div class="flex-item">
+			<div class="item"><input type="button" value="7"></div>
+			<div class="item"><input type="button" value="8"></div>
+			<div class="item"><input type="button" value="9"></div>
+			<div class="item"><input type="button" value="+"></div>
+		</div>
+		<div class="flex-item">
+			<div class="item"><input type="button" value="4"></div>
+			<div class="item"><input type="button" value="5"></div>
+			<div class="item"><input type="button" value="6"></div>
+			<div class="item"><input type="button" value="-"></div>
+		</div>
+		<div class="flex-item">
+			<div class="item"><input type="button" value="1"></div>
+			<div class="item"><input type="button" value="2"></div>
+			<div class="item"><input type="button" value="3"></div>
+			<div class="item"><input type="button" value="*"></div>
+		</div>
+		<div class="flex-item">
+			<div class="item"><input type="button" value="."></div>
+			<div class="item"><input type="button" value="0"></div>
+			<div class="item"><input type="button" value="="></div>
+			<div class="item"><input type="button" value="/"></div>
+		</div>
+	</div>
+</template>
+<script>
+	var thisdoc = document._currentScript.ownerDocument;
+	var elem = thisdoc.querySelector('#calciCalculate');
+	
+	var proto = Object.create(HTMLElement.prototype,{
+		createdCallback : {
+			value : function(){
+				
+				var clone = document.importNode(elem.content , true);
+				var divItem = clone.querySelector(".flex-container");
+				
+				var width = this.attributes.getNamedItem('width');
+				var height = this.attributes.getNamedItem('height');
+				if(width) divItem.style.width = width.value+'px';
+				if(height) divItem.style.height = height.value+'px';
+
+				// added eventListener on flex container
+				divItem.addEventListener('click',function(e){
+
+					// delegating event to button
+					if (e.target && e.target.matches("input[type='button']")) {
+				    	
+				    	var screen = this.querySelector('input[type="text"]');
+				    	var val = screen.value;
+				       	if(e.target.value === 'C'){
+				       		val='';
+				       	}else if(e.target.value === '='){
+				       		val = eval(val);
+				       	}else {
+				       		val += e.target.value;
+				       	}
+				       	screen.value = val;
+				    
+				    }
+				}.bind(divItem), false);
+
+
+				this.createShadowRoot().appendChild(clone);
+			}
+		}
+	});
+
+	document.registerElement('tf-calci',{
+		prototype : proto
+	});
+</script>
